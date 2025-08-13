@@ -31,10 +31,13 @@ for i in `ls`; do
                 # Shared libraries are symlinked in $PREFIX/lib
                 ln -s ${PREFIX}/${targetsDir}/$j ${PREFIX}/$j
 
-                if [[ $j =~ \.so\. ]]; then
-                    # Remove existing RPATH first to avoid multiple entries
-                    patchelf --remove-rpath ${PREFIX}/${targetsDir}/$j
-                    patchelf --set-rpath '$ORIGIN' --force-rpath ${PREFIX}/${targetsDir}/$j
+                if [[ $j =~ \.so ]]; then
+                    echo "Processing ${PREFIX}/${targetsDir}/$j"
+                    echo "Original RPATH: $(patchelf --print-rpath ${PREFIX}/${targetsDir}/$j)"
+                    # Clear RPATH completely, then set to $ORIGIN
+                    patchelf --remove-rpath ${PREFIX}/${targetsDir}/$j || true
+                    patchelf --set-rpath '$ORIGIN' ${PREFIX}/${targetsDir}/$j
+                    echo "New RPATH: $(patchelf --print-rpath ${PREFIX}/${targetsDir}/$j)"
                 fi
             done
         fi

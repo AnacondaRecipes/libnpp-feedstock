@@ -18,7 +18,8 @@ for lib in `find ${PREFIX}/${targetsDir}/lib -type f`; do
 
     rpath=$(patchelf --print-rpath $lib)
     echo "$lib rpath: $rpath"
-    if [[ $rpath != "\$ORIGIN" ]]; then
+    # Accept either just $ORIGIN or $ORIGIN:$ORIGIN/../../../lib (conda-build standard)
+    if [[ $rpath != "\$ORIGIN" && $rpath != "\$ORIGIN:\$ORIGIN/../../../lib" ]]; then
         errors+="$lib\n"
     elif command -v objdump >/dev/null 2>&1 && [[ $(objdump -x ${lib} | grep "PATH") == *"RUNPATH"* ]]; then
         errors+="$lib\n"

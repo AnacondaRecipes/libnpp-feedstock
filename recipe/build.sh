@@ -17,28 +17,26 @@ if [ -z "${targetsDir+x}" ]; then
     exit 1
 fi
 
+echo "DEBUG: Starting file processing loop"
+echo "DEBUG: Files in current directory: $(ls -la)"
+
 for i in `ls`; do
+    echo "DEBUG: Processing item: $i"
     [[ $i == "build_env_setup.sh" ]] && continue
     [[ $i == "conda_build.sh" ]] && continue
     [[ $i == "metadata_conda_debug.yaml" ]] && continue
     if [[ $i == "lib" ]] || [[ $i == "include" ]]; then
+        echo "DEBUG: Found lib or include directory: $i"
         # Headers and libraries are installed to targetsDir
         mkdir -p ${PREFIX}/${targetsDir}
         mkdir -p ${PREFIX}/$i
         cp -rv $i ${PREFIX}/${targetsDir}
         if [[ $i == "lib" ]]; then
+            echo "DEBUG: Processing lib directory with files: $(ls -la $i/)"
             for j in "$i"/*.so*; do
+                echo "DEBUG: Creating symlink for $j"
                 # Shared libraries are symlinked in $PREFIX/lib
                 ln -s ${PREFIX}/${targetsDir}/$j ${PREFIX}/$j
-
-                if [[ $j =~ \.so ]]; then
-                    echo "Processing ${PREFIX}/${targetsDir}/$j"
-                    echo "Original RPATH: $(patchelf --print-rpath ${PREFIX}/${targetsDir}/$j)"
-                    # Clear RPATH completely, then set to $ORIGIN
-                    patchelf --remove-rpath ${PREFIX}/${targetsDir}/$j || true
-                    patchelf --set-rpath '$ORIGIN' ${PREFIX}/${targetsDir}/$j
-                    echo "New RPATH: $(patchelf --print-rpath ${PREFIX}/${targetsDir}/$j)"
-                fi
             done
         fi
     else

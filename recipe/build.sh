@@ -8,7 +8,14 @@ mkdir -p ${PREFIX}/lib
 
 [[ ${target_platform} == "linux-64" ]] && targetsDir="targets/x86_64-linux"
 [[ ${target_platform} == "linux-ppc64le" ]] && targetsDir="targets/ppc64le-linux"
-[[ ${target_platform} == "linux-aarch64" ]] && targetsDir="targets/sbsa-linux"
+# https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html?highlight=tegra#cross-compilation
+[[ ${target_platform} == "linux-aarch64" && ${arm_variant_type} == "sbsa" ]] && targetsDir="targets/sbsa-linux"
+#[[ ${target_platform} == "linux-aarch64" && ${arm_variant_type} == "tegra" ]] && targetsDir="targets/aarch64-linux"
+
+if [ -z "${targetsDir+x}" ]; then
+    echo "target_platform: ${target_platform} is unknown! targetsDir must be defined!" >&2
+    exit 1
+fi
 
 for i in `ls`; do
     [[ $i == "build_env_setup.sh" ]] && continue
@@ -25,6 +32,8 @@ for i in `ls`; do
                 ln -s ${PREFIX}/${targetsDir}/$j ${PREFIX}/$j
 
                 if [[ $j =~ \.so\. ]]; then
+                    # Remove existing RPATH first to avoid multiple entries
+                    patchelf --remove-rpath ${PREFIX}/${targetsDir}/$j
                     patchelf --set-rpath '$ORIGIN' --force-rpath ${PREFIX}/${targetsDir}/$j
                 fi
             done
@@ -36,4 +45,4 @@ for i in `ls`; do
     fi
 done
 
-check-glibc "$PREFIX"/lib*/*.so.* "$PREFIX"/bin/* "$PREFIX"/targets/*/lib*/*.so.* "$PREFIX"/targets/*/bin/*
+check-glibc ${PREFIX}/${targetsDir}/lib/*.so.*

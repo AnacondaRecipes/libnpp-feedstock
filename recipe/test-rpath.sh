@@ -18,11 +18,15 @@ for lib in `find ${PREFIX}/${targetsDir}/lib -type f`; do
 
     rpath=$(patchelf --print-rpath $lib)
     echo "$lib rpath: $rpath"
-    # Accept standard conda-build RPATH patterns
-    if [[ $rpath != '$ORIGIN' && $rpath != '$ORIGIN/../../../lib' && $rpath != '$ORIGIN:$ORIGIN/../../../lib' ]]; then
-        errors+="$lib\n"
-    elif command -v objdump >/dev/null 2>&1 && [[ $(objdump -x ${lib} | grep "PATH") == *"RUNPATH"* ]]; then
-        errors+="$lib\n"
+    if [[ ${target_platform} == "linux-aarch64" ]] || [[ ${target_platform} == "linux-64" ]]; then
+        # On linux-aarch64, conda-build may append $ORIGIN/../../../lib during packaging
+        if [[ $rpath != "\$ORIGIN" && $rpath != "\$ORIGIN:\$ORIGIN/../../../lib" ]]; then
+            errors+="$lib\n"
+        fi
+    else
+        if [[ $rpath != "\$ORIGIN" ]]; then
+            errors+="$lib\n"
+        fi
     fi
 done
 

@@ -8,35 +8,25 @@ mkdir -p ${PREFIX}/lib
 
 [[ ${target_platform} == "linux-64" ]] && targetsDir="targets/x86_64-linux"
 [[ ${target_platform} == "linux-ppc64le" ]] && targetsDir="targets/ppc64le-linux"
-# https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html?highlight=tegra#cross-compilation
-[[ ${target_platform} == "linux-aarch64" && ${arm_variant_type} == "sbsa" ]] && targetsDir="targets/sbsa-linux"
-#[[ ${target_platform} == "linux-aarch64" && ${arm_variant_type} == "tegra" ]] && targetsDir="targets/aarch64-linux"
-
-if [ -z "${targetsDir+x}" ]; then
-    echo "target_platform: ${target_platform} is unknown! targetsDir must be defined!" >&2
-    exit 1
-fi
-
-echo "DEBUG: Starting file processing loop"
-echo "DEBUG: Files in current directory: $(ls -la)"
+[[ ${target_platform} == "linux-aarch64" ]] && targetsDir="targets/sbsa-linux"
 
 for i in `ls`; do
-    echo "DEBUG: Processing item: $i"
     [[ $i == "build_env_setup.sh" ]] && continue
     [[ $i == "conda_build.sh" ]] && continue
     [[ $i == "metadata_conda_debug.yaml" ]] && continue
     if [[ $i == "lib" ]] || [[ $i == "include" ]]; then
-        echo "DEBUG: Found lib or include directory: $i"
         # Headers and libraries are installed to targetsDir
         mkdir -p ${PREFIX}/${targetsDir}
         mkdir -p ${PREFIX}/$i
         cp -rv $i ${PREFIX}/${targetsDir}
         if [[ $i == "lib" ]]; then
-            echo "DEBUG: Processing lib directory with files: $(ls -la $i/)"
             for j in "$i"/*.so*; do
-                echo "DEBUG: Creating symlink for $j"
                 # Shared libraries are symlinked in $PREFIX/lib
                 ln -s ${PREFIX}/${targetsDir}/$j ${PREFIX}/$j
+
+                if [[ $j =~ \.so\. ]]; then
+                    patchelf --set-rpath '$ORIGIN' --force-rpath ${PREFIX}/${targetsDir}/$j
+                fi
             done
         fi
     else
@@ -46,4 +36,4 @@ for i in `ls`; do
     fi
 done
 
-check-glibc ${PREFIX}/${targetsDir}/lib/*.so.*
+check-glibc "$PREFIX"/lib*/*.so.* "$PREFIX"/bin/* "$PREFIX"/targets/*/lib*/*.so.* "$PREFIX"/targets/*/bin/*

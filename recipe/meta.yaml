@@ -1,6 +1,6 @@
 {% set name = "libnpp" %}
-{% set version = "12.2.5.30" %}
-{% set cuda_version = "12.4" %}
+{% set version = "12.3.3.100" %}
+{% set cuda_version = "12.8" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-ppc64le" %}  # [ppc64le]
 {% set platform = "linux-sbsa" %}  # [aarch64]
@@ -13,33 +13,24 @@
 {% set extension = "zip" %}  # [win]
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-split
   version: {{ version }}
 
 source:
   url: https://developer.download.nvidia.com/compute/cuda/redist/{{ name }}/{{ platform }}/{{ name }}-{{ platform }}-{{ version }}-archive.{{ extension }}
-  sha256: 9062bec77b9844663692459255f35fe70cf826bce2fc8065278410fc5f27023f  # [linux64]
-  sha256: 2ada6d5ec9f0a963de3bf2eb1a5e8d431a40fc4c616e1e51e04d96bbbc2604f8  # [ppc64le]
-  sha256: e91905f9a23d749fb8389f8671df67f71f49401d19f955d5029c7ebc3d839f73  # [aarch64]
-  sha256: 56d1a741a3c4f5c4b2fe73dd4eb104ab1defaea3382ed5a65e4b5fe202e9c5b1  # [win]
+  sha256: 0f77078aef0428a77fb6b661d477edb4cbf1c4b9e55f931cf211ea1a504c2949  # [linux64]
+  sha256: 01684a09d939a3290547ed1403640b7f3520362d16d9e5109d16708444fd5cf2  # [aarch64]
+  sha256: 03496f131bf2b6685b476e5765f609a43917e0521fe08a3d8604da2ad4d2a390  # [win]
 
 build:
   number: 1
   binary_relocation: false
-  skip: true  # [osx or (linux and s390x)]
+  skip: true  # [osx or ppc64le]
 
-test:
-  requires:
-    - patchelf  # [linux]
-  files:
-    - test-rpath.sh
-  commands:
-    - test -L $PREFIX/lib/libnppc.so.{{ version }}                                          # [linux]
-    - test -L $PREFIX/lib/libnppc.so.{{ version.split(".")[0] }}                            # [linux]
-    - test -L $PREFIX/targets/{{ target_name }}/lib/libnppc.so.{{ version.split(".")[0] }}  # [linux]
-    - test -f $PREFIX/targets/{{ target_name }}/lib/libnppc.so.{{ version }}                # [linux]
-    - bash test-rpath.sh                                                                    # [linux]
-    - if not exist %LIBRARY_BIN%\nppc64_{{ version.split(".")[0] }}.dll exit 1              # [win]
+requirements:
+  build:
+    - cf-nvidia-tools 1.*  # [linux]
+    - patchelf <0.18.0                      # [linux]
 
 outputs:
   - name: libnpp
@@ -51,16 +42,26 @@ outputs:
       build:
         - {{ compiler("c") }}
         - {{ compiler("cxx") }}
-        #- arm-variant * {{ arm_variant_type }}  # [aarch64]
-        - sysroot_{{ target_platform }} {{ conda_glibc_ver }}.*    # [linux]
-        - patchelf <0.18.0                      # [linux]
+        - arm-variant * {{ arm_variant_type }}  # [aarch64]
+        - {{ stdlib("c") }}
       host:
          - cuda-version {{ cuda_version }}
       run:
          - {{ pin_compatible("cuda-version", max_pin="x.x") }}
       run_constrained:
         - arm-variant * {{ arm_variant_type }}  # [aarch64]
-    # Tests are defined at the top level, due to package/output name conflicts.
+    test:
+      requires:
+        - patchelf  # [linux]
+      files:
+        - test-rpath.sh
+      commands:
+        - test -L $PREFIX/lib/libnppc.so.{{ version }}                                          # [linux]
+        - test -L $PREFIX/lib/libnppc.so.{{ version.split(".")[0] }}                            # [linux]
+        - test -L $PREFIX/targets/{{ target_name }}/lib/libnppc.so.{{ version.split(".")[0] }}  # [linux]
+        - test -f $PREFIX/targets/{{ target_name }}/lib/libnppc.so.{{ version }}                # [linux]
+        - bash test-rpath.sh                                                                    # [linux]
+        - if not exist %LIBRARY_BIN%\nppc64_{{ version.split(".")[0] }}.dll exit 1              # [win]
     about:
       home: https://developer.nvidia.com/npp
       license: LicenseRef-NVIDIA-End-User-License-Agreement
@@ -90,8 +91,8 @@ outputs:
       build:
         - {{ compiler("c") }}
         - {{ compiler("cxx") }}
-        #- arm-variant * {{ arm_variant_type }}  # [aarch64]
-        - sysroot_{{ target_platform }} {{ conda_glibc_ver }}.*    # [linux]
+        - arm-variant * {{ arm_variant_type }}  # [aarch64]
+        - {{ stdlib("c") }}
       host:
         - cuda-version {{ cuda_version }}
       run:
@@ -131,8 +132,8 @@ outputs:
       build:
         - {{ compiler("c") }}
         - {{ compiler("cxx") }}
-        #- arm-variant * {{ arm_variant_type }}  # [aarch64]
-        - sysroot_{{ target_platform }} {{ conda_glibc_ver }}.*    # [linux]
+        - arm-variant * {{ arm_variant_type }}  # [aarch64]
+        - {{ stdlib("c") }}
       host:
         - cuda-version {{ cuda_version }}
       run:
@@ -165,3 +166,4 @@ about:
 extra:
   recipe-maintainers:
     - conda-forge/cuda
+  feedstock-name: libnpp

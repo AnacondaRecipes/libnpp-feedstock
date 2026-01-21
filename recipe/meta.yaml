@@ -1,6 +1,6 @@
 {% set name = "libnpp" %}
-{% set version = "13.0.1.2" %}
-{% set cuda_version = "13.0" %}
+{% set version = "13.0.3.3" %}
+{% set cuda_version = "13.1" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-sbsa" %}  # [aarch64]
 {% set platform = "windows-x86_64" %}  # [win]
@@ -16,9 +16,9 @@ package:
 
 source:
   url: https://developer.download.nvidia.com/compute/cuda/redist/{{ name }}/{{ platform }}/{{ name }}-{{ platform }}-{{ version }}-archive.{{ extension }}
-  sha256: b99e7e145283667728e5fd1bf99c79ed9825c164d3c4a40f6dc549cb0b0e1333  # [linux64]
-  sha256: 6d06bd527b3cb17e354a3d25f9334ff9f972f6af7dc1fe0a7e0f5b87ba6e618a  # [aarch64]
-  sha256: cec65b472cdbd97c557cc45cabc5998288b48c166b9e05d95b8ee3e44083906b  # [win]
+  sha256: 9c8471e8c12071ca46966301bfff7bf913d8a9c43b33c38384e477fb5f927989  # [linux64]
+  sha256: 3ac14047b98627af77fd7900a4b226939f575017e78bf826e2a63861132206d5  # [aarch64]
+  sha256: 1be29c5a7380f8b1328a8cef6a050fe426140d1c32efd26a6bb508978ccaaaf2  # [win]
 
 build:
   number: 0
@@ -90,9 +90,6 @@ outputs:
       - Library\include                           # [win]
       - Library\lib\{{ target_name }}             # [win]
     requirements:
-      run:
-        - libnpp >={{ version }}
-    requirements:
       build:
         - {{ compiler("c") }}
         - {{ compiler("cxx") }}
@@ -129,9 +126,6 @@ outputs:
   - name: libnpp-static
     build:
       skip: True  # [not linux]
-    requirements:
-      run:
-        - libnpp-dev >={{ version }}
     files:
       - targets/{{ target_name }}/lib/libnpp*_static.a
     requirements:

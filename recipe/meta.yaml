@@ -26,17 +26,25 @@ source:
   sha256: cfcfbf59e4e5ce71113c058bd4eba3dd56e4db080932146d4047c0d44b4a558e  # [win]
 
 build:
-  number: 1
+  number: 0
   binary_relocation: false
-  skip: true  # [osx or ppc64le]
+  skip: true  # [osx]
 
 requirements:
   build:
     - cf-nvidia-tools 1.*  # [linux]
-    - patchelf <0.18.0                      # [linux]
+    - patchelf <0.18.0     # [linux]
 
 outputs:
   - name: libnpp
+    build:
+      binary_relocation: false
+      missing_dso_whitelist:
+        # Needed for the use of conda-build's --error-overlinking command-line argument
+        - '*libgcc_s.so*'  # [linux]
+      overlinking_ignore_patterns:
+        # Workaround for LIEF's 'not a valid TAG' error
+        - '*libnpp*.so*'  # [linux and aarch64]
     files:
       - lib/libnpp*.so.*                            # [linux]
       - targets/{{ target_name }}/lib/libnpp*.so.*  # [linux]
@@ -69,10 +77,12 @@ outputs:
       license: LicenseRef-NVIDIA-End-User-License-Agreement
       license_file: LICENSE
       license_url: https://docs.nvidia.com/cuda/eula/index.html
+      license_family: Other
       summary: NPP native runtime libraries
       description: |
         NPP native runtime libraries
       doc_url: https://docs.nvidia.com/cuda/npp/index.html
+      dev_url: https://docs.nvidia.com/cuda/npp/index.html
 
   - name: libnpp-dev
     build:
@@ -117,10 +127,12 @@ outputs:
       license: LicenseRef-NVIDIA-End-User-License-Agreement
       license_file: LICENSE
       license_url: https://docs.nvidia.com/cuda/eula/index.html
+      license_family: Other
       summary: NPP native runtime libraries
       description: |
         NPP native runtime libraries
       doc_url: https://docs.nvidia.com/cuda/npp/index.html
+      dev_url: https://docs.nvidia.com/cuda/npp/index.html
 
   - name: libnpp-static
     build:
@@ -149,20 +161,24 @@ outputs:
       license: LicenseRef-NVIDIA-End-User-License-Agreement
       license_file: LICENSE
       license_url: https://docs.nvidia.com/cuda/eula/index.html
+      license_fmaily: Other
       summary: NPP native runtime libraries
       description: |
         NPP native runtime libraries
       doc_url: https://docs.nvidia.com/cuda/npp/index.html
+      dev_url: https://docs.nvidia.com/cuda/npp/index.html
 
 about:
   home: https://developer.nvidia.com/npp
   license: LicenseRef-NVIDIA-End-User-License-Agreement
   license_file: LICENSE
   license_url: https://docs.nvidia.com/cuda/eula/index.html
+  license_family: Other
   summary: NPP native runtime libraries
   description: |
     NPP native runtime libraries
   doc_url: https://docs.nvidia.com/cuda/npp/index.html
+  dev_url: https://docs.nvidia.com/cuda/npp/index.html
 
 extra:
   recipe-maintainers:

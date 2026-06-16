@@ -3,3 +3,7 @@ upstream_sources:
   - webpage:
       url: https://api.anaconda.org/package/conda-forge/libnpp
       regex: '"version":\s*"([^"]+)"'
+    packages:
+      - libnpp
+      - libnpp-dev
+      - libnpp-static

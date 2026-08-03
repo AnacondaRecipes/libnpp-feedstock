@@ -170,6 +170,8 @@ about:
   dev_url: https://docs.nvidia.com/cuda/npp/index.html
 
 extra:
+  skip-lints:
+    - deprecate_license_url
   recipe-maintainers:
     - conda-forge/cuda
   feedstock-name: libnpp

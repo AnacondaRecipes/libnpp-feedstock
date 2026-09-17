@@ -25,14 +25,14 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   binary_relocation: false
   skip: true  # [osx]
 
 requirements:
   build:
     - cf-nvidia-tools 1.*  # [linux]
-    - patchelf <0.18.0                      # [linux]
+    - patchelf <0.18.0     # [linux]
 
 outputs:
   - name: libnpp
@@ -174,6 +174,8 @@ about:
   dev_url: https://docs.nvidia.com/cuda/npp/index.html
 
 extra:
+  skip-lints:
+    - deprecate_license_url
   recipe-maintainers:
     - conda-forge/cuda
   feedstock-name: libnpp

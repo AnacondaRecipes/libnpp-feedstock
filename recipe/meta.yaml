@@ -1,14 +1,20 @@
 {% set name = "libnpp" %}
-{% set version = "13.1.2.81" %}
-{% set cuda_version = "13.3" %}
+{% set version = "13.2.0.35" %}
+{% set cuda_version = "13.4" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-sbsa" %}  # [aarch64]
-{% set platform = "windows-x86_64" %}  # [win]
+{% set platform = "windows-x86_64" %}  # [win64]
+{% set platform = "windows-arm64" %}  # [win and arm64]
 {% set target_name = "x86_64-linux" %}  # [linux64]
 {% set target_name = "sbsa-linux" %}  # [aarch64]
-{% set target_name = "x64" %}  # [win]
+{% set target_name = "x64" %}  # [win64]
+{% set target_name = "arm64" %}  # [win and arm64]
 {% set extension = "tar.xz" %}  # [not win]
 {% set extension = "zip" %}  # [win]
+{% set sha256 = "94deca82955341613a6f796ccfa8057cf9dc4162203b7c84471407768f655832" %}  # [linux64]
+{% set sha256 = "ed2fe3afa54425909db8e24d6171c2e059990e5575071f18f199251147d4bb9e" %}  # [aarch64]
+{% set sha256 = "39ed6d59754c654611c0e0527d5ea839d665d50fe4181908269ef26c1741a8f4" %}  # [win64]
+{% set sha256 = "95e1c497c4e9fffc761e35cb65cc4289c165356ab5922818b7c6bf5c516e6b32" %}  # [win and arm64]
 
 package:
   name: {{ name|lower }}-split
@@ -16,12 +22,10 @@ package:
 
 source:
   url: https://developer.download.nvidia.com/compute/cuda/redist/{{ name }}/{{ platform }}/{{ name }}-{{ platform }}-{{ version }}-archive.{{ extension }}
-  sha256: 66cc9bd04f3ae8ad5052851db8a4031aa843b0fe7d83cabd1ca0780d183df983  # [linux64]
-  sha256: 38439720bdbefaf6523ccad667dbd998a108e98858bb6da117b64e9d761c1d0b  # [aarch64]
-  sha256: 0be5a4898689840ae3d1afc6ae4afbd8d75eddbaa2ce112702593edfca08f523  # [win]
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   binary_relocation: false
   skip: true  # [osx]
 

@@ -1,5 +1,5 @@
 {% set name = "libnpp" %}
-{% set version = "13.2.0.35" %}
+{% set version = "13.2.0.58" %}
 {% set cuda_version = "13.4" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-sbsa" %}  # [aarch64]
@@ -11,10 +11,10 @@
 {% set target_name = "arm64" %}  # [win and arm64]
 {% set extension = "tar.xz" %}  # [not win]
 {% set extension = "zip" %}  # [win]
-{% set sha256 = "94deca82955341613a6f796ccfa8057cf9dc4162203b7c84471407768f655832" %}  # [linux64]
-{% set sha256 = "ed2fe3afa54425909db8e24d6171c2e059990e5575071f18f199251147d4bb9e" %}  # [aarch64]
-{% set sha256 = "39ed6d59754c654611c0e0527d5ea839d665d50fe4181908269ef26c1741a8f4" %}  # [win64]
-{% set sha256 = "95e1c497c4e9fffc761e35cb65cc4289c165356ab5922818b7c6bf5c516e6b32" %}  # [win and arm64]
+{% set sha256 = "6e219a5472d28d7e038e88c2a5d1ab18f936f3a13cc8dd4c62f08c0e6233780a" %}  # [linux64]
+{% set sha256 = "64deb4d377a3a257bacfbb1aa0141461dcaade53c72ed21eb0b9b412ac7568d5" %}  # [aarch64]
+{% set sha256 = "fe13b282cc1be059e40e04e52db43fc18c74a38c844da7858fdf514d6e0539d5" %}  # [win64]
+{% set sha256 = "ed64e55ad11a49abb83d1a13f57e317928357809bfc82e6f841eaeb0f4e40334" %}  # [win and arm64]
 
 package:
   name: {{ name|lower }}-split

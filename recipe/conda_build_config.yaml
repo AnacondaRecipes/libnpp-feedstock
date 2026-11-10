@@ -1,2 +1,5 @@
 arm_variant_type: # [aarch64]
   - sbsa          # [aarch64]
+c_stdlib:
+  - sysroot        # [linux]
+  - vs             # [win]

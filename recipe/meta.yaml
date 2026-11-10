@@ -1,6 +1,6 @@
 {% set name = "libnpp" %}
-{% set version = "13.2.0.58" %}
-{% set cuda_version = "13.4" %}
+{% set version = "13.2.0.93" %}
+{% set cuda_version = "13.5" %}
 {% set platform = "linux-x86_64" %}  # [linux64]
 {% set platform = "linux-sbsa" %}  # [aarch64]
 {% set platform = "windows-x86_64" %}  # [win64]
@@ -11,10 +11,10 @@
 {% set target_name = "arm64" %}  # [win and arm64]
 {% set extension = "tar.xz" %}  # [not win]
 {% set extension = "zip" %}  # [win]
-{% set sha256 = "6e219a5472d28d7e038e88c2a5d1ab18f936f3a13cc8dd4c62f08c0e6233780a" %}  # [linux64]
-{% set sha256 = "64deb4d377a3a257bacfbb1aa0141461dcaade53c72ed21eb0b9b412ac7568d5" %}  # [aarch64]
-{% set sha256 = "fe13b282cc1be059e40e04e52db43fc18c74a38c844da7858fdf514d6e0539d5" %}  # [win64]
-{% set sha256 = "ed64e55ad11a49abb83d1a13f57e317928357809bfc82e6f841eaeb0f4e40334" %}  # [win and arm64]
+{% set sha256 = "545272cbc72db92b0a0148c80cc4032122ad93f3a748179659f43f08ae8a16b1" %}  # [linux64]
+{% set sha256 = "ca332c266ef903f6535a2b35cb7836a6f8fafd2037efab222a5f4d2821f597d3" %}  # [aarch64]
+{% set sha256 = "a99f6637db41b87e6b350049fbd82f60aa85404ba11740bdacbfb4422d85714d" %}  # [win64]
+{% set sha256 = "65d8cfa9cdbebae53b22d4589c2904d23d0c2c3ed80a32f8a3d5ff445cb1eaf3" %}  # [win and arm64]
 
 package:
   name: {{ name|lower }}-split
@@ -25,7 +25,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   binary_relocation: false
   skip: true  # [osx]
 
@@ -69,7 +69,7 @@ outputs:
         - test -L $PREFIX/targets/{{ target_name }}/lib/libnppc.so.{{ version.split(".")[0] }}  # [linux]
         - test -f $PREFIX/targets/{{ target_name }}/lib/libnppc.so.{{ version }}                # [linux]
         - bash test-rpath.sh                                                                    # [linux]
-        - if not exist %LIBRARY_BIN%\nppc64_{{ version.split(".")[0] }}.dll exit 1              # [win]
+        - if not exist %LIBRARY_BIN%\nppc64_*.dll exit 1                                         # [win]
     about:
       home: https://developer.nvidia.com/npp
       license: LicenseRef-NVIDIA-End-User-License-Agreement
